@@ -1,0 +1,7 @@
+{
+  "name": "@mmantai/svg-chart-components",
+  "version": "1.0.0",
+  "description": "Vue components to create different charts",
+  "author": "Mathias Mantai",
+  "license": "ISC"
+}
