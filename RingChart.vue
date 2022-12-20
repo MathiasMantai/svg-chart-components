@@ -3,7 +3,8 @@
         data() {
             return {
                 totalData: 0,
-                svgRingParts: []
+                svgRingParts: [],
+                viewbox: ""
             }
         },
         props: {
@@ -11,10 +12,19 @@
                 type: Number,
                 default: 100
             },
+            ringWidth: {
+                type: Number,
+                default: 10
+            },
             data: {
                 type: Array,
                 default: [10,10,10,10,10]
             },
+            color: {
+                type: Array,
+                default: ["#ff6200", "green", "red", "blue", "#fff"]
+            }
+
         },
         methods: {
             arcEndPoint(angle, radius, totalSize) {
@@ -43,16 +53,39 @@
             this.totalData = this.calcTotalData(this.data);
             
             //calculate angles based on percentage of 360 degrees
+            let startX = this.radius*2;
+            let startY = this.radius;
+            let angleSum = 0;
+            let cnt = 0;
             this.data.map( (dataElement) => {
-                this.svgRingParts.push(this.dataToAngle(dataElement, this.totalData));
+                let currentAngle = this.dataToAngle(dataElement, this.totalData);
+                let largeArcFlag = (currentAngle > 180 ? 1 : 0);
+
+                //offset for 
+                let offset = angleSum;
+
+                //sum of angles for next offset
+                angleSum += currentAngle;
+
+                //endpoint for outer arc
+                let currentEndPoint = this.arcEndPoint(currentAngle, this.radius, this.radius * 2);
+
+                //endpoint for inner arc
+                let currentEndPointInner =  this.arcEndPoint(currentAngle, this.radius - this.ringWidth, this.radius * 2);;
+
+                //path commands
+                this.svgRingParts.push({path: "M " + startX + " " + startY + " " + "A " + this.radius + " " + this.radius + " 0 0 0 " + currentEndPoint[0] + " " + currentEndPoint[1] + " L " + currentEndPointInner[0] + " " + currentEndPointInner[1] + " A " + (this.radius - this.ringWidth) + " " + (this.radius - this.ringWidth) + " 0 " + largeArcFlag + " 1" + (startX - this.ringWidth) + " " + startY, color: this.color[cnt], offset: offset});
+                cnt++;
             });
 
-            //create ring parts command
-
+            //viewbox
+            this.viewbox = "0 0 " + this.radius*2 + " " + this.radius*2;
         }
     }
 </script>
 
 <template>
-    {{ svgRingParts }}
+    <svg :viewbox="viewbox" :width="(radius * 2)" :height="(radius * 2)">
+        <path v-for="path in svgRingParts" :d="path.path" :fill="path.color" :transform="'rotate('+path.offset+')'" style="transform-origin: center;" />
+    </svg>
 </template>
