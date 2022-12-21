@@ -3,7 +3,8 @@
 
 Currently this repo supports the following chart types:
 - Pie chart
+- Ring chart
 
 The following chart types are planned:
-- Ring chart
 - Line chart
+- Bar chart
