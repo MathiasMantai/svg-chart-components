@@ -41,7 +41,7 @@
             dataToAngle(dataElement, totalData) {
                 let dataElementPercentage = (dataElement * 100) / totalData;
                 let angle = (dataElementPercentage * 360) / 100;
-                console.log(dataElement, totalData);
+                // console.log(dataElement, totalData);
                 return angle;
             },
             outputChart() {
@@ -62,7 +62,7 @@
                 let largeArcFlag = (currentAngle > 180 ? 1 : 0);
 
                 //offset for 
-                let offset = angleSum;
+                let offset = 360 - angleSum;
 
                 //sum of angles for next offset
                 angleSum += currentAngle;
@@ -71,10 +71,10 @@
                 let currentEndPoint = this.arcEndPoint(currentAngle, this.radius, this.radius * 2);
 
                 //endpoint for inner arc
-                let currentEndPointInner =  this.arcEndPoint(currentAngle, this.radius - this.ringWidth, this.radius * 2);;
-
+                let currentEndPointInner =  this.arcEndPoint(currentAngle, this.radius - this.ringWidth, this.radius * 2);
+                console.log(offset);
                 //path commands
-                this.svgRingParts.push({path: "M " + startX + " " + startY + " " + "A " + this.radius + " " + this.radius + " 0 0 0 " + currentEndPoint[0] + " " + currentEndPoint[1] + " L " + currentEndPointInner[0] + " " + currentEndPointInner[1] + " A " + (this.radius - this.ringWidth) + " " + (this.radius - this.ringWidth) + " 0 " + largeArcFlag + " 1" + (startX - this.ringWidth) + " " + startY, color: this.color[cnt], offset: offset});
+                this.svgRingParts.push({path: "M " + startX + " " + startY + " " + "A " + this.radius + " " + this.radius + " 0 " + largeArcFlag + " 0 " + currentEndPoint[0] + " " + currentEndPoint[1] + " L " + currentEndPointInner[0] + " " + currentEndPointInner[1] + " A " + (this.radius - this.ringWidth) + " " + (this.radius - this.ringWidth) + " 0 " + largeArcFlag + " 1" + (startX - this.ringWidth) + " " + startY, color: this.color[cnt], offset: offset});
                 cnt++;
             });
 
@@ -86,6 +86,6 @@
 
 <template>
     <svg :viewbox="viewbox" :width="(radius * 2)" :height="(radius * 2)">
-        <path v-for="path in svgRingParts" :d="path.path" :fill="path.color" :transform="'rotate('+path.offset+')'" style="transform-origin: center;" />
+        <path v-for="path in svgRingParts" :d="path.path" :fill="path.color" style="transform-origin: center;" :transform="'rotate('+path.offset+')'" />
     </svg>
 </template>
